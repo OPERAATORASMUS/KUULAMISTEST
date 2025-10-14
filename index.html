@@ -64,7 +64,7 @@
     <button onclick="revealSongName()">Laulu nimi</button>
     <p id="songName" style="display: none;"></p>
     <script>
-        var songs = [
+var songs = [
             "01 - Gregooriuse koraal - _Puer Natus Est Nobis_ (Üks laps on meile sündinud)",
             "02 - Gregooriuse koraal - _Veni Creator Spiritus_ (Oh tule Looja vaim)",
             "03 - Gregooriuse koraal - _Kyrie Eleison_ (Issand halasta), missa esimene muutumatu tekstiga osa",
@@ -109,57 +109,52 @@
             "42 - Wolfgang Amadeus Mozart - _Reekviem_, osa _Dies Irae_ (Viha päev)",
             "43 - Ludwig van Beethoven - Sonaat nr. 14 _Kuupaiste_, I osa - Adagio",
             "44 - Ludwig van Beethoven - Sümfoonia nr. 5 _Saatuse_, I osa - Allegro con brio",
-            "45 - Ludwig van Beethoven - Sümfoonia nr. 9, IV osa - lõpukoor _Ood rõõmule_",
+            "45 - Ludwig van Beethoven - Sümfoonia nr. 9, IV osa - lõpukoor _Ood rõõmule_"
 
-            
-        ];
+];
 
-        var currentSongIndex;
-        var timeoutId;
+var currentSongIndex;
+var timeoutId;
+var playedIndexes = [];
 
-        let currentIndex = -1;
-        let playedIndexes = [];
+function playRandomSong() {
+    if (playedIndexes.length === songs.length) {
+        playedIndexes = [];
+    }
 
-        function playRandomSong() {
-            if (playedIndexes.length === songs.length) {
-                playedIndexes = [];
-            }
-            let randomIndex = Math.floor(Math.random() * songs.length);
-            while (playedIndexes.includes(randomIndex)) {
-            randomIndex = Math.floor(Math.random() * songs.length);
-            }
-            playedIndexes.push(randomIndex);
-            var audio = document.getElementById("musicPlayer");
-            currentSongIndex = randomIndex;
-            audio.src = songs[currentSongIndex];
-            audio.currentTime = 0;
+    let randomIndex;
+    do {
+        randomIndex = Math.floor(Math.random() * songs.length);
+    } while (playedIndexes.includes(randomIndex));
 
-            audio.onloadedmetadata = function() {
-                var randomStartTime = Math.floor(Math.random() * (audio.duration - 30));
-                while (randomStartTime >= audio.duration) {
-                    randomStartTime = Math.floor(Math.random() * (audio.duration - 30));
-                }
-                audio.currentTime = parseFloat(randomStartTime);
+    playedIndexes.push(randomIndex);
+    currentSongIndex = randomIndex;
 
-                document.getElementById("songName").style.display = "none";
+    var audio = document.getElementById("musicPlayer");
 
-                audio.oncanplaythrough = function() {
-                    audio.play();
-                    clearTimeout(timeoutId);
-                    timeoutId = setTimeout(() => { audio.pause(); }, 30000);
-                };
-            };
-        }
+    var songFile = songs[currentSongIndex];
+    if (!songFile.endsWith(".mp3")) songFile += ".mp3";
+    audio.src = "https://raw.githubusercontent.com/hantsz/musa/main/" + songFile;
+    audio.load();
 
-        function revealSongName() {
-            var songName = document.getElementById("songName");
-            console.log(songName.textContent)
-            var removeNum = songName.textContent.slice(5);
-            var eemaldaMp3 = removeNum.replace(".mp3", "");
-            console.log(eemaldaMp3)
-            songName.style.display = "block";
-            songName.innerHTML = songs[currentSongIndex];
-        }
-    </script>
-</body>
-</html>
+    document.getElementById("songName").style.display = "none";
+
+    audio.onloadedmetadata = function() {
+        let maxOffset = Math.max(0, audio.duration - 30);
+        let randomStartTime = Math.floor(Math.random() * maxOffset);
+        audio.currentTime = randomStartTime;
+
+        audio.oncanplaythrough = function() {
+            audio.play();
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => { audio.pause(); }, 30000);
+        };
+    };
+}
+
+function revealSongName() {
+    var songName = document.getElementById("songName");
+    var displayName = songs[currentSongIndex].replace(".mp3", "");
+    songName.innerText = displayName;
+    songName.style.display = "block";
+}
