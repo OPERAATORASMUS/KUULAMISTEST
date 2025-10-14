@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+    <title>Kuulamistest</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100%;
+            padding-left: 10px;
+            padding-right: 10px; /* Adjust the right padding as needed */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+        h1 {
+            font-size: 3rem;
+            text-transform: uppercase;
+        }
+        h3 {
+            text-align: center;
+            font-size: 16px;
+        }
+        button {
+            font-family: 'Poppins', sans-serif;
+            border: 2px solid black;
+            border-radius: 15px;
+            padding: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 14px;
+            width: 250px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        button:hover {
+            background-color: rgb(4, 35, 58);
+            color: rgb(255, 255, 255);
+        }
+        #songName {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            position: absolute;
+            height: 45px;
+        }
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            display: none;
+}
+    </style>
+</head>
+<body>
+    <h1 style="margin-bottom: 0cap;">Musa kuulamistest - Rassi versioon</h1>
+    <h3 style="font-weight: 300;">Mängib juhuslikust kohast 30 sekundit.<br>Laulu nägemiseks vajuta "Laulu nimi" nuppu.</h3>
+    <audio style="margin: 50px;" id="musicPlayer" controls controlsList="autoplay nodownload noplaybackrate">
+        <source id="musicSource" src="https://raw.githubusercontent.com/hantsz/musa/main/" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <button onclick="playRandomSong()">&#9654; Järgmine laul</button>
+    <button onclick="revealSongName()">Laulu nimi</button>
+    <p id="songName" style="display: none;"></p>
+    <script>
+        var songs = [
+            "01 - Gregooriuse koraal - _Puer Natus Est Nobis_ (Üks laps on meile sündinud)",
+            "02 - Gregooriuse koraal - _Veni Creator Spiritus_ (Oh tule Looja vaim)",
+            "03 - Gregooriuse koraal - _Kyrie Eleison_ (Issand halasta), missa esimene muutumatu tekstiga osa",
+            "04 - Leoninus - 2-häälne organum _Viderunt omnes_ (Kõik näevad)",
+            "05 - Walther von der Vogelweide - _Palästinalied_ (Palestiina laul)",
+            "06 - Keskaegne tantsumuusika Prantsusmaalt - _Estampie_",
+            "07 - 13. sajandi motett  - _Alle psallite cum luya_ (Kõik laulge-mängige rõõmuga)",
+            "08 - Philippe de Vitry - Motett _Imprudenter Circumivi_ (Mõistmatult petma)",
+            "09 - Guillaume de Machaut _Messe de Notre Dame_ (Jumalaema missa), osa _Kyrie_",
+            "10 - Guillaume Dufay - Chanson _Se la face ai pale_ (Su nägu on nii kahvatu).mp3",
+            "11 - Clement Janequin - Chanson _ Le chant des oiseaux_ (Lindude laul) - katkend.mp3",
+            "12 - Josquin Desprez - Frottola _El Grillo_ (Ritsikas).mp3",
+            "13 - Orlando di Lasso - Madrigal _Matona mia cara_ (Minu armas daam).mp3",
+            "14 - Renessanssiaegne instrumentaalmuusika Itaaliast - _Saltarella_",
+            "15 - Martin Luther - Koraal _Üks kindel linn ja varjupaik_, ingliskeelne versioon _A Mighty Fortress is our God_",
+            "16 - Giovanni Pierluigi da Palestrina _Missa Papae Marcelli_ (Paavst Marcelluse missa), osa _Kyrie_",
+            "17 - Giovanni Gabrieli - 15-häälne kontsert _Salvator noster_ (Meie päästja)",
+            "18 - Claudio Monteverdi - ooper _Orpheus_, avamäng",
+            "19 - Claudio Monteverdi - ooper _Orpheus_, Orpheuse aaria _Possente spirto_ (Oo jumalad, allilma valitsejad)",
+            "20 - Arcangelo Corelli - Concerto Grosso op.6, nr. 8 (_Jõuluöö kontsert_), I osa - Vivace",
+            "21 - Antonio Vivaldi - Viiulikontsertide tsükkel _Aastaajad_, Kontsert  nr. 1 _Kevad_, I osa - Allegro",
+            "22 - Antonio Vivaldi - Viiulikontsertide tsükkel _Aastaajad_, Kontsert  nr.2 _Suvi_, II osa - Adagio - Presto",
+            "23 - Antonio Vivaldi - Viiulikontsertide tsükkel _Aastaajad_, Kontsert  nr. 3 _Sügis_, III osa - Allegro",
+            "24 - Jean-Baptiste Lully - ballett-komöödia _Le Bourgeois Gentilhomme_ (Kodanlasest aadlimees), Türklaste marss",
+            "25 - Henry Purcell - muusika näidendile _Abdelazar_ (Mauri kättemaks), Rondo",
+            "26 - Johann Sebastian Bach - Prelüüd ja fuuga C-duur, kogumikust _Hästitempereeritud klaviir_",
+            "27 - Johann Sebastian Bach - _Tokaata ja fuuga d-moll_, orelile",
+            "28 - Johann Sebastian Bach - _Brandenburgi kontsert_ nr.5, I osa - Allegro (katkend)",
+            "29 - Johann Sebastian Bach - _Missa h-moll_, osa _Sanctus_",
+            "30 - Johann Sebastian Bach - _Matteuse passioon_, aaria _Erbarme dich_ (Halasta, mu Jumal, mu pisarate pärast)",
+            "31 - Johann Sebastian Bach - _Matteuse passioon_, koraal _Befiehl du deine Wege_ (Oh püha pea täis verd ja haavu)",
+            "32 - Georg Friedrich Händel - kroonimishümn _Zadok the Priest_ (Preester Zadok)",
+            "33 - Georg Friedrich Händel - orkestrisüit _Veemuusika_, IV osa _Hornpipe_",
+            "34 - Georg Friedrich Händel - ooper _Rodelinda_, Bertarido aaria _Vivi tiranno_ (Elagu türann)",
+            "35 - Georg Friedrich Händel - oratoorium _Messias_, koor _Halleluja_",
+            "36 - Christoph Willibald Gluck - ooper _Orfeus ja Euridice_, Orfeuse aaria _Che faro senza Euridice_",
+            "37 - Franz Joseph Haydn - Sümfoonia nr. 94 _Üllatussümfoonia_, II osa - Andante",
+            "38 - Franz Joseph Haydn Trompetikontsert Es-duur III osa - Allegro",
+            "39 - Wolfgang Amadeus Mozart - Sümfoonia nr. 40, I osa - Allegro molto",
+            "40 - Wolfgang Amadeus Mozart - Klaverikontsert nr. 21 _Elvira Madigan_, II osa - Andante",
+            "41 - Wolfgang Amadeus Mozart - ooper _Võluflööt_, Papageno aaria _Der Vogelfänger bin ich ja_ (Olen linnukaupleja)",
+            "42 - Wolfgang Amadeus Mozart - _Reekviem_, osa _Dies Irae_ (Viha päev)",
+            "43 - Ludwig van Beethoven - Sonaat nr. 14 _Kuupaiste_, I osa - Adagio",
+            "44 - Ludwig van Beethoven - Sümfoonia nr. 5 _Saatuse_, I osa - Allegro con brio",
+            "45 - Ludwig van Beethoven - Sümfoonia nr. 9, IV osa - lõpukoor _Ood rõõmule_",
+
+            
+        ];
+
+        var currentSongIndex;
+        var timeoutId;
+
+        let currentIndex = -1;
+        let playedIndexes = [];
+
+        function playRandomSong() {
+            if (playedIndexes.length === songs.length) {
+                playedIndexes = [];
+            }
+            let randomIndex = Math.floor(Math.random() * songs.length);
+            while (playedIndexes.includes(randomIndex)) {
+            randomIndex = Math.floor(Math.random() * songs.length);
+            }
+            playedIndexes.push(randomIndex);
+            var audio = document.getElementById("musicPlayer");
+            currentSongIndex = randomIndex;
+            audio.src = songs[currentSongIndex];
+            audio.currentTime = 0;
+
+            audio.onloadedmetadata = function() {
+                var randomStartTime = Math.floor(Math.random() * (audio.duration - 30));
+                while (randomStartTime >= audio.duration) {
+                    randomStartTime = Math.floor(Math.random() * (audio.duration - 30));
+                }
+                audio.currentTime = parseFloat(randomStartTime);
+
+                document.getElementById("songName").style.display = "none";
+
+                audio.oncanplaythrough = function() {
+                    audio.play();
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => { audio.pause(); }, 30000);
+                };
+            };
+        }
+
+        function revealSongName() {
+            var songName = document.getElementById("songName");
+            console.log(songName.textContent)
+            var removeNum = songName.textContent.slice(5);
+            var eemaldaMp3 = removeNum.replace(".mp3", "");
+            console.log(eemaldaMp3)
+            songName.style.display = "block";
+            songName.innerHTML = songs[currentSongIndex];
+        }
+    </script>
+</body>
+</html>
