@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
     <title>Kuulamistest</title>
+    <!-- Vabandus koodi varastamise eest-->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -56,6 +57,7 @@
 </head>
 <body>
     <h1 style="margin-bottom: 0cap;">Musa kuulamistest</h1>
+    <h3>Originaalse versiooni lõi Hans Herman Männik. / 10. klassi versiooni lõi R.J.KARUS.</h3>
     <h3 style="font-weight: 300;">Mängib juhuslikust kohast 30 sekundit.<br>Laulu nägemiseks vajuta "Laulu nimi" nuppu.</h3>
     <audio style="margin: 50px;" id="musicPlayer" controls controlsList="autoplay nodownload noplaybackrate">
         <source id="musicSource" src="https://raw.githubusercontent.com/hantsz/musa/main/" type="audio/mpeg">
@@ -64,6 +66,7 @@
     <button onclick="playRandomSong()">&#9654; Järgmine laul</button>
     <button onclick="revealSongName()">Laulu nimi</button>
     <p id="songName" style="display: none;"></p>
+   <button onclick="window.location.href='https://www.opleht.ee/wp-content/uploads/sites/8/2013/12/nisuma.jpg'">Ära siia vajuta</button>
     <script>
         var songs = [
             "01 - Gregooriuse koraal - _Puer Natus Est Nobis_ (Üks laps on meile sündinud).mp3",
